@@ -1,0 +1,2 @@
+forceBasedRotatingMotion.C
+LIB = $(FOAM_USER_LIBBIN)/forceBasedRotatingMotion
