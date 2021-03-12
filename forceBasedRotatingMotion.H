@@ -39,6 +39,8 @@ SourceFiles
 #define forceBasedRotatingMotion_H
 
 #include "solidBodyMotionFunction.H"
+#include "fvMesh.H"
+#include "volFields.H"
 #include "primitiveFields.H"
 #include "point.H"
 #include "Function1.H"
@@ -68,6 +70,12 @@ protected:
 
         //- Boundary patches for force calculation
         wordList patchSet_;
+
+        //- Name of pressure field
+        word pName_;
+
+        //- Reference density
+        scalar rhoRef_;
 
 private:
     // Private Data

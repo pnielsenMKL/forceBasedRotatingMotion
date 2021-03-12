@@ -26,6 +26,7 @@ License
 #include "forceBasedRotatingMotion.H"
 #include "addToRunTimeSelectionTable.H"
 #include "mathematicalConstants.H"
+#include "surfaceMesh.H"
 
 using namespace Foam::constant::mathematical;
 
@@ -57,6 +58,8 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
     solidBodyMotionFunction(SBMFCoeffs, runTime),
     coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
     patchSet_(coeffs_.lookup("patches")),
+    pName_(coeffs_.lookup("pName")),
+    rhoRef_(readScalar(coeffs_.lookup("rhoRef"))),
     origin_(coeffs_.lookup("origin")),
     axis_(coeffs_.lookup("axis")),
     omega_(Function1<scalar>::New("omega", coeffs_))
@@ -75,6 +78,33 @@ Foam::septernion
 Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
 {
     // Testing forces
+    vector force = vector(0,0,0);
+    const fvMesh& mesh = time_.db().parent().lookupObject<fvMesh>("region0"); // Needs to be generalized and moved to a member variable
+    const volScalarField& p = mesh.lookupObject<volScalarField>(pName_);
+    const volVectorField& U = mesh.lookupObject<volVectorField>("U");
+
+    forAll(patchSet_, i)
+    {
+        // Get patch index
+        label patchI = mesh.boundaryMesh().findPatchID(patchSet_[i]);
+
+        // Get displacement vectors for faces from origin
+        vectorField Md
+        (
+            mesh.C().boundaryField()[patchI] - origin_
+        );
+
+        // Get normal forces on faces
+        scalar pRef = 0; // Needs to be read from dict
+        vectorField fN
+        (
+            rhoRef_*mesh.boundary()[patchI].Sf()*(p.boundaryField()[patchI] - pRef)
+        );
+
+	// Sum the pressure force
+        force = sum(fN);
+	Info << "Pressure force " << force << endl;
+    }
 
     scalar t = time_.value();
 
