@@ -59,6 +59,14 @@ class forceBasedRotatingMotion
 :
     public solidBodyMotionFunction
 {
+protected:
+
+    // Protected data
+
+        //- Model dictionary
+        dictionary coeffs_;
+
+private:
     // Private Data
 
         //- Origin of the axis
@@ -69,7 +77,6 @@ class forceBasedRotatingMotion
 
         //- Angular velocity (rad/sec)
         autoPtr<Function1<scalar>> omega_;
-
 
 public:
 

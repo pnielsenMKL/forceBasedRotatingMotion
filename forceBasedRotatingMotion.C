@@ -55,9 +55,10 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
 )
 :
     solidBodyMotionFunction(SBMFCoeffs, runTime),
-    origin_(SBMFCoeffs_.lookup("origin")),
-    axis_(SBMFCoeffs_.lookup("axis")),
-    omega_(Function1<scalar>::New("omega", SBMFCoeffs_))
+    coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
+    origin_(coeffs_.lookup("origin")),
+    axis_(coeffs_.lookup("axis")),
+    omega_(Function1<scalar>::New("omega", coeffs_))
 {}
 
 
