@@ -66,6 +66,9 @@ protected:
         //- Model dictionary
         dictionary coeffs_;
 
+        //- Boundary patches for force calculation
+        wordList patchSet_;
+
 private:
     // Private Data
 
