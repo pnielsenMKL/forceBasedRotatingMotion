@@ -56,6 +56,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
 :
     solidBodyMotionFunction(SBMFCoeffs, runTime),
     coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
+    patchSet_(coeffs_.lookup("patches")),
     origin_(coeffs_.lookup("origin")),
     axis_(coeffs_.lookup("axis")),
     omega_(Function1<scalar>::New("omega", coeffs_))
@@ -73,6 +74,8 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::~forceBasedRotatingMot
 Foam::septernion
 Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
 {
+    // Testing forces
+
     scalar t = time_.value();
 
     // Rotation around axis
