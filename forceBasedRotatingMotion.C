@@ -80,6 +80,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
 {
     // Testing forces
     vector pressureForce = vector(0,0,0);
+    vector pressureMoment = vector(0,0,0);
     const volScalarField& p = mesh_.lookupObject<volScalarField>(pName_);
     const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
 
@@ -95,14 +96,22 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
         );
 
         // Get normal forces on faces
-        vectorField fN
+        vectorField Fp
         (
-            rhoRef_*mesh_.boundary()[patchI].Sf()*p.boundaryField()[patchI]
+            rhoRef_*p.boundaryField()[patchI]*mesh_.boundary()[patchI].Sf()
         );
 
-        // Sum the pressure force
-        pressureForce += sum(fN);
+        // Get moment of force on each face
+        vectorField Mp
+        (
+            Md ^ Fp
+        );
+
+        // Sum the pressure force/moment
+        pressureForce += sum(Fp);
+        pressureMoment += sum(Mp);
 	      Info << "Pressure force " << pressureForce << endl;
+        Info << "Pressure moment " << pressureMoment << endl;
     }
 
     scalar t = time_.value();
