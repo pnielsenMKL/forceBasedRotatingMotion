@@ -56,6 +56,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
 )
 :
     solidBodyMotionFunction(SBMFCoeffs, runTime),
+    mesh_(time_.db().parent().lookupObject<fvMesh>("region0")),
     coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
     patchSet_(coeffs_.lookup("patches")),
     pName_(coeffs_.lookup("pName")),
@@ -79,26 +80,25 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
 {
     // Testing forces
     vector force = vector(0,0,0);
-    const fvMesh& mesh = time_.db().parent().lookupObject<fvMesh>("region0"); // Needs to be generalized and moved to a member variable
-    const volScalarField& p = mesh.lookupObject<volScalarField>(pName_);
-    const volVectorField& U = mesh.lookupObject<volVectorField>("U");
+    const volScalarField& p = mesh_.lookupObject<volScalarField>(pName_);
+    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
 
     forAll(patchSet_, i)
     {
         // Get patch index
-        label patchI = mesh.boundaryMesh().findPatchID(patchSet_[i]);
+        label patchI = mesh_.boundaryMesh().findPatchID(patchSet_[i]);
 
         // Get displacement vectors for faces from origin
         vectorField Md
         (
-            mesh.C().boundaryField()[patchI] - origin_
+            mesh_.C().boundaryField()[patchI] - origin_
         );
 
         // Get normal forces on faces
         scalar pRef = 0; // Needs to be read from dict
         vectorField fN
         (
-            rhoRef_*mesh.boundary()[patchI].Sf()*(p.boundaryField()[patchI] - pRef)
+            rhoRef_*mesh_.boundary()[patchI].Sf()*(p.boundaryField()[patchI] - pRef)
         );
 
 	// Sum the pressure force

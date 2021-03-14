@@ -61,9 +61,12 @@ class forceBasedRotatingMotion
 :
     public solidBodyMotionFunction
 {
-protected:
 
-    // Protected data
+private:
+    // Private Data
+
+        //- Reference to mesh
+        const fvMesh& mesh_;
 
         //- Model dictionary
         dictionary coeffs_;
@@ -76,9 +79,6 @@ protected:
 
         //- Reference density
         scalar rhoRef_;
-
-private:
-    // Private Data
 
         //- Origin of the axis
         const vector origin_;
