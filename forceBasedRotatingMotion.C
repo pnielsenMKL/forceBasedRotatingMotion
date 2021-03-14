@@ -78,11 +78,25 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::~forceBasedRotatingMot
 Foam::septernion
 Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
 {
-    // Testing forces
+    // Typedefs
+    typedef incompressible::momentumTransportModel icoTurbModel;
+
+    // Lookup turbulence model
+    // - Note: this is currently limited to incompressible turbulence models
+    const incompressible::momentumTransportModel& turb =
+      mesh_.lookupObject<icoTurbModel>(momentumTransportModel::typeName);
+
+    // Initialize forces/moments
     vector pressureForce = vector(0,0,0);
     vector pressureMoment = vector(0,0,0);
+    vector viscousForce = vector(0,0,0);
+    vector viscousMoment = vector(0,0,0);
+    vector netForce = vector(0,0,0);
+    vector netMoment = vector(0,0,0);
+
+    // Get fields for calculating forces/moments
     const volScalarField& p = mesh_.lookupObject<volScalarField>(pName_);
-    const volVectorField& U = mesh_.lookupObject<volVectorField>("U");
+    const volSymmTensorField& devSigma = turb.devSigma();
 
     forAll(patchSet_, i)
     {
@@ -98,21 +112,43 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
         // Get normal forces on faces
         vectorField Fp
         (
-            rhoRef_*p.boundaryField()[patchI]*mesh_.boundary()[patchI].Sf()
+            -rhoRef_*p.boundaryField()[patchI]*mesh_.boundary()[patchI].Sf()
         );
 
-        // Get moment of force on each face
+        // Get moment of pressure force on each face
         vectorField Mp
         (
             Md ^ Fp
         );
 
+        // Get viscous forces on faces
+        vectorField Fv
+        (
+            -rhoRef_*devSigma.boundaryField()[patchI]&mesh_.boundary()[patchI].Sf()
+        );
+
+        // Get moment of viscous force on each face
+        vectorField Mv
+        (
+            Md ^ Fv
+        );
+
         // Sum the pressure force/moment
         pressureForce += sum(Fp);
         pressureMoment += sum(Mp);
-	      Info << "Pressure force " << pressureForce << endl;
-        Info << "Pressure moment " << pressureMoment << endl;
+        viscousForce += sum(Fv);
+        viscousMoment += sum(Mv);
     }
+
+    netForce = pressureForce + viscousForce;
+    netMoment = pressureMoment + viscousMoment;
+
+    Info << "Pressure force " << pressureForce << endl;
+    Info << "Pressure moment " << pressureMoment << endl;
+    Info << "Viscous force " << viscousForce << endl;
+    Info << "Viscous moment " << viscousMoment << endl;
+    Info << "Net force " << netForce << endl;
+    Info << "Net moment " << netMoment << endl;
 
     scalar t = time_.value();
 

@@ -41,6 +41,7 @@ SourceFiles
 #include "solidBodyMotionFunction.H"
 #include "fvMesh.H"
 #include "volFields.H"
+#include "kinematicMomentumTransportModel.H"
 #include "primitiveFields.H"
 #include "point.H"
 #include "Function1.H"
