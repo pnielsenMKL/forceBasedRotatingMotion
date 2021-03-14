@@ -59,7 +59,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
     mesh_(time_.db().parent().lookupObject<fvMesh>("region0")),
     coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
     patchSet_(coeffs_.lookup("patches")),
-    pName_(coeffs_.lookup("pName")),
+    pName_(coeffs_.lookupOrDefault<word>("pName", "p")),
     rhoRef_(readScalar(coeffs_.lookup("rhoRef"))),
     origin_(coeffs_.lookup("origin")),
     axis_(coeffs_.lookup("axis")),
