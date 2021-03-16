@@ -63,7 +63,11 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
     rhoRef_(readScalar(coeffs_.lookup("rhoRef"))),
     origin_(coeffs_.lookup("origin")),
     axis_(coeffs_.lookup("axis")),
-    omega_(Function1<scalar>::New("omega", coeffs_))
+    momentOfIntertia_(readScalar(coeffs_.lookup("momentOfIntertia"))),
+    opposingTorque_(readScalar(coeffs_.lookup("opposingTorque"))),
+    omega_(coeffs_.lookupOrDefault<scalar>("omega", 0)),
+    angle_(0),
+    alpha_(0)
 {}
 
 
@@ -75,8 +79,8 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::~forceBasedRotatingMot
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-Foam::septernion
-Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
+void
+Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
 {
     // Typedefs
     typedef incompressible::momentumTransportModel icoTurbModel;
@@ -112,7 +116,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
         // Get normal forces on faces
         vectorField Fp
         (
-            -rhoRef_*p.boundaryField()[patchI]*mesh_.boundary()[patchI].Sf()
+            rhoRef_*p.boundaryField()[patchI]*mesh_.boundary()[patchI].Sf()
         );
 
         // Get moment of pressure force on each face
@@ -160,15 +164,34 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
     Info << "Net force " << netForce << endl;
     Info << "Net moment " << netMoment << endl;
 
-    scalar t = time_.value();
+    //scalar t = time_.value();
 
+    // Get timestep data
+    scalar dt = time_.deltaTValue();
+    scalar dto = time_.deltaT0Value();
+
+    // Update the motion
+    omega_ += 0.5*dto*alpha_;
+    angle_ += dt*omega_;
+    scalar appliedMoment = netMoment & axis_;
+    scalar opposingTorque = sign(appliedMoment)*opposingTorque_;
+    alpha_ = (appliedMoment - opposingTorque)/momentOfIntertia_;
+    omega_ += 0.5*dt*alpha_;
+
+    Info << "omega " << omega_ << endl;
+}
+
+Foam::septernion
+Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation()
+{
+    this->updateAngle();
     // Rotation around axis
-    scalar angle = omega_->integrate(0, t);
+    //scalar angle = omega_->integrate(0, t);
 
-    quaternion R(axis_, angle);
+    quaternion R(axis_, angle_);
     septernion TR(septernion(-origin_)*R*septernion(origin_));
 
-    DebugInFunction << "Time = " << t << " transformation: " << TR << endl;
+    //DebugInFunction << "Time = " << t << " transformation: " << TR << endl;
 
     return TR;
 }
@@ -180,11 +203,6 @@ bool Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::read
 )
 {
     solidBodyMotionFunction::read(SBMFCoeffs);
-
-    omega_.reset
-    (
-        Function1<scalar>::New("omega", SBMFCoeffs_).ptr()
-    );
 
     return true;
 }

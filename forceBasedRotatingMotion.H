@@ -87,8 +87,20 @@ private:
         //- Axis vector
         const vector axis_;
 
+        //- Moment of inertia
+        const scalar momentOfIntertia_;
+
+        //- Opposing torque (Nm)
+        const scalar opposingTorque_;
+
         //- Angular velocity (rad/sec)
-        autoPtr<Function1<scalar>> omega_;
+        scalar omega_;
+
+        //- Rotation angle (rad)
+        scalar angle_;
+
+        //- Angular acceleration (rad/sec/sec)
+        scalar alpha_;
 
 public:
 
@@ -130,11 +142,13 @@ public:
     // Member Functions
 
         //- Return the solid-body motion transformation septernion
-        virtual septernion transformation() const;
+        virtual septernion transformation();
 
         //- Update properties from given dictionary
         virtual bool read(const dictionary& SBMFCoeffs);
 
+        //- Update the angle
+        void updateAngle();
 
     // Member Operators
 
