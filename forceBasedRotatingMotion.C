@@ -124,7 +124,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
         // Get viscous forces on faces
         vectorField Fv
         (
-            -rhoRef_*devSigma.boundaryField()[patchI]&mesh_.boundary()[patchI].Sf()
+            rhoRef_*devSigma.boundaryField()[patchI]&mesh_.boundary()[patchI].Sf()
         );
 
         // Get moment of viscous force on each face
