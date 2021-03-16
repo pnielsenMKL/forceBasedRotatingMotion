@@ -73,13 +73,13 @@ private:
         dictionary coeffs_;
 
         //- Boundary patches for force calculation
-        wordList patchSet_;
+        const wordList patchSet_;
 
         //- Name of pressure field
-        word pName_;
+        const word pName_;
 
         //- Reference density
-        scalar rhoRef_;
+        const scalar rhoRef_;
 
         //- Origin of the axis
         const vector origin_;
