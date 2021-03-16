@@ -140,6 +140,16 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation() const
         viscousMoment += sum(Mv);
     }
 
+    // Combine for parallel case
+    Pstream::combineGather(pressureForce, plusEqOp<vector>());
+    Pstream::combineGather(viscousForce, plusEqOp<vector>());
+    Pstream::combineGather(pressureMoment, plusEqOp<vector>());
+    Pstream::combineGather(viscousMoment, plusEqOp<vector>());
+    Pstream::combineScatter(pressureForce);
+    Pstream::combineScatter(viscousForce);
+    Pstream::combineScatter(pressureMoment);
+    Pstream::combineScatter(viscousMoment);
+
     netForce = pressureForce + viscousForce;
     netMoment = pressureMoment + viscousMoment;
 
