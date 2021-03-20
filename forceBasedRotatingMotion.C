@@ -173,12 +173,14 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
     // Update the motion
     omega_ += 0.5*dto*alpha_;
     angle_ += dt*omega_;
-    scalar appliedMoment = netMoment & axis_;
-    scalar opposingTorque = sign(appliedMoment)*opposingTorque_;
+    scalar appliedMoment = fluidMoment & axis_;
+//    scalar opposingTorque = sign(appliedMoment)*opposingTorque_;
+    scalar opposingTorque = opposingTorque_*omega_;
     alpha_ = (appliedMoment - opposingTorque)/momentOfIntertia_;
     omega_ += 0.5*dt*alpha_;
 
     Info << "omega " << omega_ << endl;
+    Info << "opposingTorque " << opposingTorque << endl;
 }
 
 Foam::septernion
