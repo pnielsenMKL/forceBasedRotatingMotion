@@ -66,7 +66,8 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
     momentOfIntertia_(readScalar(coeffs_.lookup("momentOfIntertia"))),
     opposingTorque_(readScalar(coeffs_.lookup("opposingTorque"))),
     omega_(coeffs_.lookupOrDefault<scalar>("omega", 0)),
-    angle_(0),
+//    angle_(0),
+    angle_(coeffs_.lookupOrDefault<scalar>("angle", 0)),//added 
     alpha_(0)
 {}
 
@@ -181,6 +182,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
 
     Info << "omega " << omega_ << endl;
     Info << "opposingTorque " << opposingTorque << endl;
+    Info << "angle " << angle_ << endl;
 }
 
 Foam::septernion
