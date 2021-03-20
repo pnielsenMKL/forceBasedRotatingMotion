@@ -96,8 +96,8 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
     vector pressureMoment = vector(0,0,0);
     vector viscousForce = vector(0,0,0);
     vector viscousMoment = vector(0,0,0);
-    vector netForce = vector(0,0,0);
-    vector netMoment = vector(0,0,0);
+    vector fluidForce = vector(0,0,0);
+    vector fluidMoment = vector(0,0,0);
 
     // Get fields for calculating forces/moments
     const volScalarField& p = mesh_.lookupObject<volScalarField>(pName_);
@@ -155,15 +155,15 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
     Pstream::combineScatter(pressureMoment);
     Pstream::combineScatter(viscousMoment);
 
-    netForce = pressureForce + viscousForce;
-    netMoment = pressureMoment + viscousMoment;
+    fluidForce = pressureForce + viscousForce;
+    fluidMoment = pressureMoment + viscousMoment;
 
     Info << "Pressure force " << pressureForce << endl;
     Info << "Pressure moment " << pressureMoment << endl;
     Info << "Viscous force " << viscousForce << endl;
     Info << "Viscous moment " << viscousMoment << endl;
-    Info << "Net force " << netForce << endl;
-    Info << "Net moment " << netMoment << endl;
+    Info << "fluid force " << fluidForce << endl;
+    Info << "fluid moment " << fluidMoment << endl;
 
     //scalar t = time_.value();
 
