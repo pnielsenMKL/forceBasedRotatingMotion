@@ -22,8 +22,8 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
-
-#include "forceBasedRotatingMotion.H"
+s
+#include "linearRampRotatingMotion.H"
 #include "addToRunTimeSelectionTable.H"
 #include "mathematicalConstants.H"
 #include "surfaceMesh.H"
@@ -36,11 +36,11 @@ namespace Foam
 {
 namespace solidBodyMotionFunctions
 {
-    defineTypeNameAndDebug(forceBasedRotatingMotion, 0);
+    defineTypeNameAndDebug(linearRampRotatingMotion, 0);
     addToRunTimeSelectionTable
     (
         solidBodyMotionFunction,
-        forceBasedRotatingMotion,
+        linearRampRotatingMotion,
         dictionary
     );
 }
@@ -49,7 +49,7 @@ namespace solidBodyMotionFunctions
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMotion
+Foam::solidBodyMotionFunctions::linearRampRotatingMotion::linearRampRotatingMotion
 (
     const dictionary& SBMFCoeffs,
     const Time& runTime
@@ -57,7 +57,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
 :
     solidBodyMotionFunction(SBMFCoeffs, runTime),
     mesh_(time_.db().parent().lookupObject<fvMesh>("region0")),
-    coeffs_(SBMFCoeffs.subDict("forceBasedRotatingMotionCoeffs")),
+    coeffs_(SBMFCoeffs.subDict("linearRampRotatingMotionCoeffs")),
     patchSet_(coeffs_.lookup("patches")),
     pName_(coeffs_.lookupOrDefault<word>("pName", "p")),
     rhoRef_(readScalar(coeffs_.lookup("rhoRef"))),
@@ -74,14 +74,14 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::forceBasedRotatingMoti
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::~forceBasedRotatingMotion()
+Foam::solidBodyMotionFunctions::linearRampRotatingMotion::~linearRampRotatingMotion()
 {}
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 void
-Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
+Foam::solidBodyMotionFunctions::linearRampRotatingMotion::updateAngle()
 {
     // Typedefs
     typedef incompressible::momentumTransportModel icoTurbModel;
@@ -186,7 +186,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::updateAngle()
 }
 
 Foam::septernion
-Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation()
+Foam::solidBodyMotionFunctions::linearRampRotatingMotion::transformation()
 {
     this->updateAngle();
     // Rotation around axis
@@ -201,7 +201,7 @@ Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::transformation()
 }
 
 
-bool Foam::solidBodyMotionFunctions::forceBasedRotatingMotion::read
+bool Foam::solidBodyMotionFunctions::linearRampRotatingMotion::read
 (
     const dictionary& SBMFCoeffs
 )

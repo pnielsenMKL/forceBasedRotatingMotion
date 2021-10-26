@@ -35,8 +35,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef forceBasedRotatingMotion_H
-#define forceBasedRotatingMotion_H
+#ifndef linearRampRotatingMotion_H
+#define linearRampRotatingMotion_H
 
 #include "solidBodyMotionFunction.H"
 #include "fvMesh.H"
@@ -58,7 +58,7 @@ namespace solidBodyMotionFunctions
                           Class rotatingMotion Declaration
 \*---------------------------------------------------------------------------*/
 
-class forceBasedRotatingMotion
+class linearRampRotatingMotion
 :
     public solidBodyMotionFunction
 {
@@ -105,20 +105,20 @@ private:
 public:
 
     //- Runtime type information
-    TypeName("forceBasedRotatingMotion");
+    TypeName("linearRampRotatingMotion");
 
 
     // Constructors
 
         //- Construct from components
-        forceBasedRotatingMotion
+        linearRampRotatingMotion
         (
             const dictionary& SBMFCoeffs,
             const Time& runTime
         );
 
         //- Disallow default bitwise copy construction
-        forceBasedRotatingMotion(const forceBasedRotatingMotion&);
+        linearRampRotatingMotion(const linearRampRotatingMotion&);
 
 
         //- Construct and return a clone
@@ -126,7 +126,7 @@ public:
         {
             return autoPtr<solidBodyMotionFunction>
             (
-                new forceBasedRotatingMotion
+                new linearRampRotatingMotion
                 (
                     SBMFCoeffs_,
                     time_
@@ -136,7 +136,7 @@ public:
 
 
     //- Destructor
-    virtual ~forceBasedRotatingMotion();
+    virtual ~linearRampRotatingMotion();
 
 
     // Member Functions
@@ -153,7 +153,7 @@ public:
     // Member Operators
 
         //- Disallow default bitwise assignment
-        void operator=(const forceBasedRotatingMotion&) = delete;
+        void operator=(const linearRampRotatingMotion&) = delete;
 };
 
 
