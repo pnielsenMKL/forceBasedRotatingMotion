@@ -1,2 +1,2 @@
-forceBasedRotatingMotion.C
-LIB = $(FOAM_USER_LIBBIN)/forceBasedRotatingMotion
+linearRampRotatingMotion.C
+LIB = $(FOAM_USER_LIBBIN)/linearRampRotatingMotion

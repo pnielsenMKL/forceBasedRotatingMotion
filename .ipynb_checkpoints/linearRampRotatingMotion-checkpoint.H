@@ -72,35 +72,30 @@ private:
         //- Model dictionary
         dictionary coeffs_;
 
-        //- Boundary patches for force calculation
-        const wordList patchSet_;
-
-        //- Name of pressure field
-        const word pName_;
-
-        //- Reference density
-        const scalar rhoRef_;
-
         //- Origin of the axis
         const vector origin_;
 
         //- Axis vector
         const vector axis_;
 
-        //- Moment of inertia
-        const scalar momentOfIntertia_;
+        //- Initial Angular velocity (rad/sec)
+        scalar omegaIn_;
+        
+        
+        //- final Angular velocity (rad/sec)
+        scalar omegaFin_;
 
-        //- Opposing torque (Nm)
-        const scalar opposingTorque_;
-
+        //- initial angle (rad)
+        scalar thetaIn_;
+        
+        //- final angle (rad)
+        scalar thetaFin_;
+        
         //- Angular velocity (rad/sec)
         scalar omega_;
 
         //- Rotation angle (rad)
         scalar angle_;
-
-        //- Angular acceleration (rad/sec/sec)
-        scalar alpha_;
 
 public:
 
